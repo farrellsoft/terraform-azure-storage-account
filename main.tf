@@ -13,4 +13,8 @@ module containers {
 
   container_name        = var.containers[count.index]
   storage_account_name  = var.storage_account_name
+
+  depends_on = [
+    sa
+  ]
 }

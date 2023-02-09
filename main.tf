@@ -21,7 +21,7 @@ module containers {
   source = "./modules/blob-container"
   count  = length(var.containers)
 
-  container_name        = var.containers[count.index]
+  container_name        = var.containers[count.index].name
   storage_account_name  = azurerm_storage_account.sa.name
   role_assignments      = var.containers[count.index].role_assignments
 }

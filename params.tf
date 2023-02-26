@@ -69,6 +69,33 @@ variable containers {
   default   = []
 }
 
+variable private_connections {
+  type          = object({
+    blob                   = optional(object({
+      subnet_id               = string
+      private_dns_zone_id     = string
+      resource_group_name     = string
+    }), null)
+    file                   = optional(object({
+      subnet_id               = string
+      private_dns_zone_id     = string
+      resource_group_name     = string
+    }), null)
+    queue                  = optional(object({
+      subnet_id               = string
+      private_dns_zone_id     = string
+      resource_group_name     = string
+    }), null)
+    table                  = optional(object({
+      subnet_id               = string
+      private_dns_zone_id     = string
+      resource_group_name     = string
+    }), null)
+  })
+  description   = "The private connection information object."
+  default       = null
+}
+
 variable role_assignments {
   type      = list(object({
     role_definition_name    = string

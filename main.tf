@@ -1,12 +1,15 @@
 
 module naming {
-  source      = "app.terraform.io/Farrellsoft/resource-naming/azure"
-  version     = "0.0.1"
+  source  = "app.terraform.io/Farrellsoft/resource-naming/azure"
+  version     = "1.0.1"
+  //source      = "../azure-resource-naming"
 
   application         = var.application
   environment         = var.environment
   instance_number     = var.instance_number
 }
+
+data azurerm_client_config current {}
 
 resource azurerm_storage_account sa {
   name                     = module.naming.storage_account_name

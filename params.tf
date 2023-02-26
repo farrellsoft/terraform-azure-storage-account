@@ -69,6 +69,16 @@ variable containers {
   default   = []
 }
 
+variable file_shares {
+  type      = list(object({
+    name                    = string
+    role_assignments        = optional(list(object({
+      role_definition_name    = string
+      object_id               = string
+    })), [])
+  }))
+}
+
 variable private_connections {
   type          = object({
     blob                   = optional(object({

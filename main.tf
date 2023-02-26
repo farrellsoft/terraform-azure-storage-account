@@ -1,8 +1,8 @@
 
 module naming {
-  source  = "app.terraform.io/Farrellsoft/resource-naming/azure"
-  version     = "1.0.1"
-  //source      = "../azure-resource-naming"
+  //source  = "app.terraform.io/Farrellsoft/resource-naming/azure"
+  //version     = "1.0.1"
+  source      = "../azure-resource-naming"
 
   application         = var.application
   environment         = var.environment
@@ -27,6 +27,15 @@ module containers {
   container_name        = var.containers[count.index].name
   storage_account_name  = azurerm_storage_account.sa.name
   role_assignments      = var.containers[count.index].role_assignments
+}
+
+module file-shares {
+  source = "./modules/file-share"
+  count  = length(var.file_shares)
+
+  fileshare_name        = var.file_shares[count.index].name
+  storage_account_name  = azurerm_storage_account.sa.name
+  role_assignments      = var.file_shares[count.index].role_assignments
 }
 
 resource azurerm_role_assignment this {

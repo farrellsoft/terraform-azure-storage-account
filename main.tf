@@ -38,6 +38,23 @@ module file-shares {
   role_assignments      = var.file_shares[count.index].role_assignments
 }
 
+module queues {
+  source = "./modules/queue"
+  count  = length(var.queues)
+
+  queue_name            = var.queues[count.index].name
+  storage_account_name  = azurerm_storage_account.sa.name
+  role_assignments      = var.queues[count.index].role_assignments
+}
+
+module tables {
+  source = "./modules/table"
+  count  = length(var.queues)
+
+  table_name            = var.tables[count.index].name
+  storage_account_name  = azurerm_storage_account.sa.name
+}
+
 resource azurerm_role_assignment this {
   count           = length(var.role_assignments)
 

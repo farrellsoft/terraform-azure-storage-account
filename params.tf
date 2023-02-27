@@ -79,6 +79,24 @@ variable file_shares {
   }))
 }
 
+variable queues {
+  type      = list(object({
+    name                    = string
+    role_assignments        = optional(list(object({
+      role_definition_name    = string
+      object_id               = string
+    })), [])
+  }))
+  default   = []
+}
+
+variable tables {
+  type      = list(object({
+    name                    = string
+  }))
+  default   = []
+}
+
 variable private_connections {
   type          = object({
     blob                   = optional(object({

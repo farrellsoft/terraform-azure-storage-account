@@ -58,6 +58,10 @@ variable replication_type {
   }
 }
 
+variable allow_public_blob_access {
+  type          = bool
+}
+
 variable containers {
   type      = list(object({
     name                    = string
@@ -77,6 +81,7 @@ variable file_shares {
       object_id               = string
     })), [])
   }))
+  default   = []
 }
 
 variable queues {
@@ -97,31 +102,35 @@ variable tables {
   default   = []
 }
 
-variable private_connections {
+variable private_endpoints {
   type          = object({
-    blob                   = optional(object({
+    blobs                  = optional(list(object({
       subnet_id               = string
       private_dns_zone_id     = string
       resource_group_name     = string
-    }), null)
-    file                   = optional(object({
+      purpose                 = optional(string, "")
+    })), [])
+    files                  = optional(list(object({
       subnet_id               = string
       private_dns_zone_id     = string
       resource_group_name     = string
-    }), null)
-    queue                  = optional(object({
+      purpose                 = optional(string, "")
+    })), [])
+    queues                 = optional(list(object({
       subnet_id               = string
       private_dns_zone_id     = string
       resource_group_name     = string
-    }), null)
-    table                  = optional(object({
+      purpose                 = optional(string, "")
+    })), [])
+    tables                 = optional(list(object({
       subnet_id               = string
       private_dns_zone_id     = string
       resource_group_name     = string
-    }), null)
+      purpose                 = optional(string, "")
+    })), [])
   })
   description   = "The private connection information object."
-  default       = null
+  default       = {}
 }
 
 variable role_assignments {
@@ -130,4 +139,13 @@ variable role_assignments {
     object_id               = string
   }))
   default   = []
+}
+
+variable networking_config {
+  type        = object({
+    default_action        = optional(string, "Allow")
+    allow_public_access   = optional(bool, true)
+  })
+  description = "The networking configuration for the storage account."
+  default     = null
 }

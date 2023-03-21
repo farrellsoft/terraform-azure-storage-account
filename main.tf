@@ -8,9 +8,9 @@ terraform {
 }
 
 module naming {
-  //source  = "app.terraform.io/Farrellsoft/resource-naming/azure"
-  //version     = "1.0.1"
-  source      = "../azure-resource-naming"
+  source      = "app.terraform.io/Farrellsoft/resource-naming/azure"
+  version     = "1.0.1"
+  //source      = "../azure-resource-naming"
 
   application         = var.application
   environment         = var.environment
@@ -30,15 +30,15 @@ resource azapi_resource this {
   location              = var.location
 
   body          = jsonencode({
-    kind            = "StorageV2",
+    kind            = var.account_kind,
     sku             = {
-      name      = "Standard_LRS"
+      name      = "${var.account_tier}_${var.replication_type}"
     },
     properties      = {
       allowBlobPublicAccess = var.allow_public_blob_access,
       publicNetworkAccess   = var.networking_config.allow_public_access ? "Enabled" : "Disabled"
       networkAcls           = {
-        bypass        = "None",
+        bypass        = var.networking_config.bypass,
         defaultAction = var.networking_config.default_action
       }
     }
@@ -52,15 +52,13 @@ resource azapi_resource_action listkeys {
   response_export_values  = ["*"]
 }
 
-#module containers {
-#  source = "./modules/blob-container"
-#  count  = length(var.containers)
-#
-#  container_name        = var.containers[count.index].name
-#  storage_account_name  = azurerm_storage_account.sa.name
-#  role_assignments      = var.containers[count.index].role_assignments
-#}
-#
+resource azapi_resource blobservices {
+  count               = length(var.containers)
+
+  type            = "Microsoft.Storage/storageAccounts/blobServices@2022-09-01"
+  name            = var.containers[count.index].name
+  parent_id       = "${azapi_resource.this.id}/blobServices/default"
+}
 
 resource azapi_resource fileshares {
   count               = length(var.file_shares)
@@ -70,24 +68,22 @@ resource azapi_resource fileshares {
   parent_id       = "${azapi_resource.this.id}/fileservices/default"
 }
 
-#
-#module queues {
-#  source = "./modules/queue"
-#  count  = length(var.queues)
-#
-#  queue_name            = var.queues[count.index].name
-#  storage_account_name  = azurerm_storage_account.sa.name
-#  role_assignments      = var.queues[count.index].role_assignments
-#}
-#
-#module tables {
-#  source = "./modules/table"
-#  count  = length(var.queues)
-#
-#  table_name            = var.tables[count.index].name
-#  storage_account_name  = azurerm_storage_account.sa.name
-#}
-#
+resource azapi_resource queues {
+  count           = length(var.queues)
+  
+  type            = "Microsoft.Storage/storageAccounts/queueServices/queues@2022-09-01"
+  name            = var.queues[count.index].name
+  parent_id       = "${azapi_resource.this.id}/queueServices/default"
+}
+
+resource azapi_resource tables {
+  count           = length(var.tables)
+  
+  type            = "Microsoft.Storage/storageAccounts/tableServices/tables@2022-09-01"
+  name            = var.tables[count.index].name
+  parent_id       = "${azapi_resource.this.id}/tableServices/default"
+}
+
 #resource azurerm_role_assignment this {
 #  count           = length(var.role_assignments)
 #

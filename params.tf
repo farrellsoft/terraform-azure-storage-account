@@ -145,7 +145,8 @@ variable networking_config {
   type        = object({
     default_action        = optional(string, "Allow")
     allow_public_access   = optional(bool, true)
+    bypass                = optional(string, "AzureServices")
   })
   description = "The networking configuration for the storage account."
-  default     = null
+  default     = {}
 }
